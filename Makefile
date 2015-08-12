@@ -29,7 +29,7 @@ rpm:
 docs:
 	PYTHONPATH=$(PYTHONPATH) sphinx-1.0-build -b html doc/source doc/build
 
-build: docs rpm
+build: rpm
 
 test:
 	PYTHONPATH=$(PYTHONPATH) $(NOSE) $(TEST)
