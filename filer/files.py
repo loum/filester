@@ -2,16 +2,17 @@
 
 """
 __all__ = [
-    "create_dir",
-    "get_directory_files",
-    "get_directory_files_list",
-    "remove_files",
-    "move_file",
-    "copy_file",
-    "check_filename",
-    "gen_digest",
-    "gen_digest_path",
-    "lock_file",
+    'create_dir',
+    'get_directory_files',
+    'get_directory_files_list',
+    'remove_files',
+    'move_file',
+    'copy_file',
+    'check_filename',
+    'gen_digest',
+    'gen_digest_path',
+    'lock_file',
+    'get_file_time_in_utc',
 ]
 import os
 import re
@@ -20,6 +21,7 @@ import shutil
 import hashlib
 import fcntl
 import tempfile
+import datetime
 
 from logga.log import log
 
@@ -358,6 +360,7 @@ def templater(template_file, **kwargs):
 
     return template_sub
 
+
 def lock_file(file_to_lock):
     """Creates a file descriptor for read/write against *file_to_lock*
     and produces an exclusive lock against the file descriptor.
@@ -388,6 +391,7 @@ def lock_file(file_to_lock):
 
     return file_desc
 
+
 def unlock_file(file_desc):
     """Release file lock on *file_desc*.
 
@@ -395,3 +399,20 @@ def unlock_file(file_desc):
     log.debug('Releasing lock on file "%s"' % file_desc.name)
     fcntl.lockf(file_desc, fcntl.LOCK_UN)
     file_desc.close()
+
+
+def get_file_time_in_utc(filename):
+    """Will attempt to read *filename* modified time stamp and return
+    a RFC 3339-compliant string in UTC.
+
+    If time can not be obtained then ``None`` is returned
+
+    """
+    utc_time_str = None
+
+    if os.path.isfile(filename):
+        utc_time = os.stat(filename)[8]
+        utc_time_dt = datetime.datetime.fromtimestamp(utc_time)
+        utc_time_str = utc_time_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    return utc_time_str

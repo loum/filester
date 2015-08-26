@@ -15,7 +15,8 @@ from filer.files import (get_directory_files,
                          copy_file,
                          gen_digest_path,
                          lock_file,
-                         unlock_file)
+                         unlock_file,
+                         get_file_time_in_utc)
 
 
 class TestFiles(unittest2.TestCase):
@@ -215,3 +216,40 @@ class TestFiles(unittest2.TestCase):
 
         # Clean up.
         remove_files(filename)
+
+    def test_get_file_time_in_utc(self):
+        """Get file UTC time.
+        """
+        # Given a file
+        file_obj = tempfile.NamedTemporaryFile(delete=False)
+        filename = file_obj.name
+        file_obj.close()
+
+        # with a set modified time
+        os.utime(filename, (1440585864, 1440585864))
+
+        # when I source the file's modfied time stamp
+        received = get_file_time_in_utc(filename)
+
+        # then the time should be a RFC 3339 UTC string
+        expected = '2015-08-26T20:44:24Z'
+        msg = 'File UTC time stamp error'
+        self.assertEqual(received, expected, msg)
+
+        # Clean up.
+        remove_files(filename)
+
+    def test_get_file_time_in_utc_missing_file(self):
+        """Get file UTC time: missing file..
+        """
+        # Given a missing file
+        file_obj = tempfile.NamedTemporaryFile()
+        filename = file_obj.name
+        file_obj.close()
+
+        # when I source the missing file's modfied time stamp
+        received = get_file_time_in_utc(filename)
+
+        # then should receive None
+        msg = 'Missing file UTC time stamp error'
+        self.assertIsNone(received, msg)
