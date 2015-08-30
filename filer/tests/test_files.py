@@ -1,7 +1,3 @@
-# pylint: disable=R0904,W0142,C0103
-""":mod:`filer.file` tests.
-
-"""
 import unittest2
 import tempfile
 import os
@@ -87,7 +83,7 @@ class TestFiles(unittest2.TestCase):
         file_h = open(os.path.join(directory, filter_file), 'w')
         file_h.close()
 
-        file_filter = 'TCD_Deliveries_\d{14}\.DAT'
+        file_filter = r'TCD_Deliveries_\d{14}\.DAT'
         received = get_directory_files_list(os.path.dirname(filename),
                                             file_filter=file_filter)
         expected = [os.path.join(directory, filter_file)]
@@ -100,7 +96,7 @@ class TestFiles(unittest2.TestCase):
     def test_check_filename(self):
         """Check T1250 filename format.
         """
-        re_format = 'T1250_TOL.*\.txt'
+        re_format = r'T1250_TOL.*\.txt'
         # Priority.
         received = check_filename('T1250_TOLP_20130904061851.txt',
                                   re_format)
@@ -226,13 +222,13 @@ class TestFiles(unittest2.TestCase):
         file_obj.close()
 
         # with a set modified time
-        os.utime(filename, (1440585864, 1440585864))
+        os.utime(filename, (1440901349, 1440901349))
 
         # when I source the file's modfied time stamp
         received = get_file_time_in_utc(filename)
 
         # then the time should be a RFC 3339 UTC string
-        expected = '2015-08-26T20:44:24Z'
+        expected = '2015-08-30T02:22:29Z'
         msg = 'File UTC time stamp error'
         self.assertEqual(received, expected, msg)
 

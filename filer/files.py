@@ -21,7 +21,7 @@ import shutil
 import hashlib
 import fcntl
 import tempfile
-import datetime
+import time
 
 from logga.log import log
 
@@ -43,15 +43,14 @@ def create_dir(directory):
 
     if directory is not None:
         if not os.path.exists(directory):
-            log.info('Creating directory "%s"' % directory)
+            log.info('Creating directory "%s"', directory)
             try:
                 os.makedirs(directory)
             except OSError, err:
                 status = False
-                log.error('Directory create error: %s' % err)
+                log.error('Directory create error: %s', err)
     else:
-        log.error('Create directory failed - invalid name "%s"' %
-                  directory)
+        log.error('Create directory failed - invalid name "%s"', directory)
 
     return status
 
@@ -80,7 +79,7 @@ def get_directory_files(path, file_filter=None):
     try:
         directory_files = os.listdir(path)
     except (TypeError, OSError), err:
-        log.error('Directory listing error for %s: %s' % (path, err))
+        log.error('Directory listing error for %s: %s', path, err)
 
     for this_file in directory_files:
         this_file = os.path.join(path, this_file)
@@ -104,7 +103,7 @@ def get_directory_files_list(path, file_filter=None):
     return list(get_directory_files(path, file_filter))
 
 
-def move_file(source, target, err=False, dry=False):
+def move_file(source, target, dry=False):
     """Attempts to move *source* to *target*.
 
     Checks if the *target* directory exists.  If not, will attempt to
@@ -116,10 +115,6 @@ def move_file(source, target, err=False, dry=False):
         *target*: filename of where to move *source* to
 
     **Kwargs:**
-        *err*: boolean flag which will attempt to move *source* aside if
-        the move fails if set to ``True``.  Target fail name is
-        *source*.err
-
         *dry*: only report, do not execute (but will create the target
         directory if it is missing)
 
@@ -129,11 +124,11 @@ def move_file(source, target, err=False, dry=False):
         boolean ``False`` if move failed
 
     """
-    log.info('Moving "%s" to "%s"' % (source, target))
+    log.info('Moving "%s" to "%s"', source, target)
     status = True
 
     if not os.path.exists(source):
-        log.warn('Source file "%s" does not exist' % str(source))
+        log.warn('Source file "%s" does not exist', str(source))
         status = False
     else:
         dir_status = True
@@ -146,9 +141,8 @@ def move_file(source, target, err=False, dry=False):
                 os.rename(source, target)
             except OSError as error:
                 status = False
-                log.error('%s move to %s failed -- %s' % (source,
-                                                          target,
-                                                          error))
+                log.error('%s move to %s failed: "%s"',
+                          source, target, error)
 
     return status
 
@@ -173,7 +167,7 @@ def copy_file(source, target):
         boolean ``False`` if move failed
 
     """
-    log.info('Copying "%s" to "%s"' % (source, target))
+    log.info('Copying "%s" to "%s"', source, target)
     status = False
 
     if os.path.exists(source):
@@ -187,11 +181,10 @@ def copy_file(source, target):
                 os.rename(tmp_target, target)
                 status = True
             except (OSError, IOError), err:
-                log.error('%s copy to %s failed -- %s' % (source,
-                                                          target,
-                                                          err))
+                log.error('%s copy to %s failed: "%s"',
+                          source, target, err)
     else:
-        log.warn('Source file "%s" does not exist' % str(source))
+        log.warn('Source file "%s" does not exist', str(source))
 
     return status
 
@@ -213,11 +206,11 @@ def remove_files(files):
     files_removed = []
     for file_to_remove in files:
         try:
-            log.info('Removing file "%s"' % file_to_remove)
+            log.info('Removing file "%s"', file_to_remove)
             os.remove(file_to_remove)
             files_removed.append(file_to_remove)
         except OSError, err:
-            log.error('"%s" remove failed: %s' % (file_to_remove, err))
+            log.error('"%s" remove failed: %s', file_to_remove, err)
 
     return files_removed
 
@@ -243,10 +236,10 @@ def check_filename(filename, re_format):
     reg_match = reg_c.match(os.path.basename(filename))
     if reg_match:
         status = True
-        log.debug('File "%s" matches filter "%s"' % (filename, re_format))
+        log.debug('File "%s" matches filter "%s"', filename, re_format)
     else:
-        log.debug('File "%s" did not match filter "%s"' %(filename,
-                                                          re_format))
+        log.debug('File "%s" did not match filter "%s"',
+                  filename, re_format)
 
     return status
 
@@ -273,7 +266,7 @@ def gen_digest(value):
         md5.update(value)
         digest = md5.hexdigest()[0:8]
     else:
-        log.error('Cannot generate digest against value: %s' % str(value))
+        log.error('Cannot generate digest against value: %s', str(value))
 
     return digest
 
@@ -333,7 +326,7 @@ def templater(template_file, **kwargs):
         ``KeyError`` if the template substitution fails
 
     """
-    log.debug('Processing template: "%s"' % template_file)
+    log.debug('Processing template: "%s"', template_file)
 
     template_src = None
     try:
@@ -341,22 +334,22 @@ def templater(template_file, **kwargs):
         template_src = file_h.read()
         file_h.close()
     except IOError, err:
-        log.error('Unable to source template file "%s"' % template_file)
+        log.error('Unable to source template file "%s"', template_file)
 
     template_sub = None
     if template_src is not None:
         template = string.Template(template_src)
         try:
             template_sub = template.substitute(kwargs)
-        except KeyError, err:
-            log.error('Template "%s" substitute failed: %s' %
-                      (template_file, err))
+        except KeyError as err:
+            log.error('Template "%s" substitute failed: %s',
+                      template_file, err)
 
     if template_sub is not None:
         template_sub = template_sub.rstrip('\n')
 
-    log.debug('Template substitution (%s|%s) produced: "%s"' %
-              (template_file, str(kwargs), template_sub))
+    log.debug('Template substitution (%s|%s) produced: "%s"',
+              template_file, str(kwargs), template_sub)
 
     return template_sub
 
@@ -376,17 +369,17 @@ def lock_file(file_to_lock):
     """
     file_desc = None
     if not os.path.exists(file_to_lock):
-        log.warn('File to lock "%s" does not exist' % file_to_lock)
+        log.warn('File to lock "%s" does not exist', file_to_lock)
     else:
         file_desc = open(file_to_lock, 'r+')
         try:
             fcntl.lockf(file_desc, fcntl.LOCK_EX|fcntl.LOCK_NB)
-            log.debug('Obtained exclusive lock on file "%s"' %
+            log.debug('Obtained exclusive lock on file "%s"',
                       file_desc.name)
         except IOError:
             file_desc.close()
             file_desc = None
-            log.warn('Unable to obtain exclusive lock on file "%s"' %
+            log.warn('Unable to obtain exclusive lock on file "%s"',
                      file_desc.name)
 
     return file_desc
@@ -396,7 +389,7 @@ def unlock_file(file_desc):
     """Release file lock on *file_desc*.
 
     """
-    log.debug('Releasing lock on file "%s"' % file_desc.name)
+    log.debug('Releasing lock on file "%s"', file_desc.name)
     fcntl.lockf(file_desc, fcntl.LOCK_UN)
     file_desc.close()
 
@@ -411,8 +404,8 @@ def get_file_time_in_utc(filename):
     utc_time_str = None
 
     if os.path.isfile(filename):
-        utc_time = os.stat(filename)[8]
-        utc_time_dt = datetime.datetime.fromtimestamp(utc_time)
-        utc_time_str = utc_time_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        sec_since_epoch = os.stat(filename)[8]
+        utc_time_str = time.strftime('%Y-%m-%dT%H:%M:%SZ',
+                                     time.gmtime(sec_since_epoch))
 
     return utc_time_str
