@@ -1,5 +1,6 @@
 *.py[cod]
 *.swp
+*.swo
 
 # C extensions
 *.so
@@ -37,3 +38,7 @@ coverage.xml
 
 # Local virtual environment
 .env
+venv
+
+# py.test
+.cache

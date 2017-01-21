@@ -1,6 +1,16 @@
-"""Generic file-based utilities and helpers.
+"""Generic, file-based utilities and helpers.
 
 """
+import os
+import re
+import string
+import shutil
+import hashlib
+import fcntl
+import tempfile
+import time
+from logga import log
+
 __all__ = [
     'create_dir',
     'get_directory_files',
@@ -14,23 +24,13 @@ __all__ = [
     'lock_file',
     'get_file_time_in_utc',
 ]
-import os
-import re
-import string
-import shutil
-import hashlib
-import fcntl
-import tempfile
-import time
-
-from logga.log import log
 
 
 def create_dir(directory):
     """Helper method to manage the creation of a directory.
 
     **Args:**
-        directory: the name of the directory structure to create.
+        *directory*: the name of the directory structure to create.
 
     **Returns:**
         boolean ``True`` if directory exists.
@@ -46,7 +46,7 @@ def create_dir(directory):
             log.info('Creating directory "%s"', directory)
             try:
                 os.makedirs(directory)
-            except OSError, err:
+            except OSError as err:
                 status = False
                 log.error('Directory create error: %s', err)
     else:
@@ -78,7 +78,7 @@ def get_directory_files(path, file_filter=None):
     directory_files = []
     try:
         directory_files = os.listdir(path)
-    except (TypeError, OSError), err:
+    except (TypeError, OSError) as err:
         log.error('Directory listing error for %s: %s', path, err)
 
     for this_file in directory_files:
@@ -128,7 +128,7 @@ def move_file(source, target, dry=False):
     status = True
 
     if not os.path.exists(source):
-        log.warn('Source file "%s" does not exist', str(source))
+        log.warning('Source file "%s" does not exist', str(source))
         status = False
     else:
         dir_status = True
@@ -180,11 +180,11 @@ def copy_file(source, target):
                 shutil.copyfile(source, tmp_target)
                 os.rename(tmp_target, target)
                 status = True
-            except (OSError, IOError), err:
+            except (OSError, IOError) as err:
                 log.error('%s copy to %s failed: "%s"',
                           source, target, err)
     else:
-        log.warn('Source file "%s" does not exist', str(source))
+        log.warning('Source file "%s" does not exist', str(source))
 
     return status
 
@@ -209,7 +209,7 @@ def remove_files(files):
             log.info('Removing file "%s"', file_to_remove)
             os.remove(file_to_remove)
             files_removed.append(file_to_remove)
-        except OSError, err:
+        except OSError as err:
             log.error('"%s" remove failed: %s', file_to_remove, err)
 
     return files_removed
@@ -261,9 +261,9 @@ def gen_digest(value):
     """
     digest = None
 
-    if value is not None and isinstance(value, basestring):
+    if value is not None and isinstance(value, str):
         md5 = hashlib.md5()
-        md5.update(value)
+        md5.update(bytes(value, encoding='utf-8'))
         digest = md5.hexdigest()[0:8]
     else:
         log.error('Cannot generate digest against value: %s', str(value))
@@ -271,17 +271,24 @@ def gen_digest(value):
     return digest
 
 
-def gen_digest_path(value):
+def gen_digest_path(value, dir_depth=4):
     """Helper function that handles the creation of digest-based
     directory path.  The digest is calculated from *value*.
-
     For example, the *value* ``193433`` will generate the directory path
     list::
 
         ['73', '73b0', '73b0b6', '73b0b66e']
 
+    Depth of directories created can be controlled by *dir_depth*.
+
     **Args:**
         *value*: the string value to generate digest against
+
+    **Kwargs:**
+        *dir_depth*: number of directory levels (default 4).  For example,
+        depth of 2 would produce::
+
+            ['73', 73b0']
 
     **Returns:**
         list of 8-byte segments that constitite the original 32-byte
@@ -292,9 +299,7 @@ def gen_digest_path(value):
 
     dirs = []
     if digest is not None:
-        num = 2
-        dirs = [digest[0:2 + (i * 2)] for i in range(0,
-                                                     len(digest) / num)]
+        dirs = [digest[0:2 + (i * 2)] for i in range(0, dir_depth)]
 
     return dirs
 
@@ -333,7 +338,7 @@ def templater(template_file, **kwargs):
         file_h = open(template_file)
         template_src = file_h.read()
         file_h.close()
-    except IOError, err:
+    except IOError as err:
         log.error('Unable to source template file "%s"', template_file)
 
     template_sub = None
@@ -369,7 +374,7 @@ def lock_file(file_to_lock):
     """
     file_desc = None
     if not os.path.exists(file_to_lock):
-        log.warn('File to lock "%s" does not exist', file_to_lock)
+        log.warning('File to lock "%s" does not exist', file_to_lock)
     else:
         file_desc = open(file_to_lock, 'r+')
         try:
@@ -379,8 +384,8 @@ def lock_file(file_to_lock):
         except IOError:
             file_desc.close()
             file_desc = None
-            log.warn('Unable to obtain exclusive lock on file "%s"',
-                     file_desc.name)
+            log.warning('Unable to obtain exclusive lock on file "%s"',
+                        file_desc.name)
 
     return file_desc
 

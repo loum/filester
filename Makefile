@@ -1,58 +1,112 @@
-PY=/usr/bin/python
-NOSE=/usr/bin/nosetests -s -v --with-xunit --with-coverage --cover-erase --cover-package filer
-NOSE_ENV=.env/bin/nosetests -s -v --with-xunit --with-coverage --cover-erase --cover-package filer
-GIT=/usr/bin/git
-COVERAGE=/usr/bin/coverage
-COVERAGE_ENV=.env/bin/coverage
-PYTHONPATH=.:../logga
+# Check if we have python3 available.
+PY3_VERSION := $(shell python3 --version 2>/dev/null)
+PY3_VERSION_FULL := $(wordlist 2, 4, $(subst ., , ${PY3_VERSION}))
+PY3_VERSION_MAJOR := $(word 1, ${PY3_VERSION_FULL})
+PY3_VERSION_MINOR := $(word 2, ${PY3_VERSION_FULL})
+PY3_VERSION_PATCH := $(word 3, ${PY3_VERSION_FULL})
+USE_PY3VENV := $(shell [ ${PY3_VERSION_MINOR} -ge 3 ] && echo 0 || echo 1)
+ifneq ($(PY3_VERSION),)
+  PY := $(shell which python3 2>/dev/null)
+  ifeq ($(USE_PYVENV), 1)
+    PY_VENV := pyvenv-${PY3_VERSION_MAJOR}.${PY3_VERSION_MINOR}
+  endif
+else
+  PY_VENV := $(shell which virtualenv 2>/dev/null)
+  PY := $(shell which python 2>/dev/null)
+endif
 
-# The TEST variable can be set to allow you to control which tests
-# to run.  For example, if the current project has a test set defined at
-# "tests/test_<name>.py", to run the "Test<class_name>" class:
-#
-# $ make test TEST=tests:Test<class_name>
-#
-# To run individual test cases within each test class:
-#
-# $ make test TEST=tests:Test<class_name>.test_<test_name>
-#
-# Note: for this to work you will need to import the test class into
-# the current namespace via "tests/__init__.py"
-TEST=filer.tests:TestFiles
+# OK, set some globals.
+WHEEL=~/wheelhouse
+PYTHONPATH=.
 
-sdist:
-	$(PY) setup.py sdist
+GIT=$(shell which git 2>/dev/null)
 
-rpm:
-	$(PY) setup.py bdist_rpm --fix-python
+# Define the default test suit to run.
+TESTS=filer/tests
+
+tests:
+	PYTHONPATH=$(PYTHONPATH) $(shell which py.test) \
+	--cov-config .coveragerc --cov=filer -sv $(TESTS)
 
 docs:
-	PYTHONPATH=$(PYTHONPATH) sphinx-1.0-build -b html doc/source doc/build
-
-build: rpm
-
-test:
-	PYTHONPATH=$(PYTHONPATH) $(NOSE) $(TEST)
-
-test_env:
-	$(NOSE_ENV) $(TEST)
-
-coverage: test
-	$(COVERAGE) xml -i
-
-coverage_env: test_env
-	$(COVERAGE_ENV) xml -i
-
-uninstall:
-	$(RPM) -e python-filer
-
-install:
-	$(RPM) -ivh dist/python-filer-?.??-?.noarch.rpm
-
-upgrade:
-	$(RPM) -Uvh dist/python-filer-?.??-?.noarch.rpm
+	PYTHONPATH=$(PYTHONPATH) $(shell which sphinx-build) \
+	-b html doc/source doc/build
 
 clean:
 	$(GIT) clean -xdf
 
-.PHONY: docs rpm test coverage
+VENV_DIR_EXISTS := $(shell [ -e "venv" ] && echo 1 || echo 0)
+clear_env:
+ifeq ($(VENV_DIR_EXISTS), 1)
+	@echo \#\#\# Deleting existing environment venv ...
+	$(shell which rm) -fr venv
+	@echo \#\#\# venv delete done.
+endif
+
+init_env:
+	@echo \#\#\# Creating virtual environment venv ...
+ifneq ($(PY3_VERSION),)
+    ifeq ($(USE_PY3VENV), 0)
+		$(PY) -m venv venv
+    else
+		$(PY_VENV) venv
+    endif
+	@echo \#\#\# venv build done.
+
+	@echo \#\#\# Installing package dependencies ...
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install -e .
+	@echo \#\#\# Package install done.
+else
+	@echo \#\#\# Hmmm, cannot find python3 exe.
+	@echo \#\#\# Virtual environment not created.
+endif
+
+init: clear_env init_env
+
+init_env_from_wheel:
+	@echo \#\#\# Creating virtual environment venv.
+	@echo \#\#\# Using wheel house $(WHEEL) ...
+ifneq (${PY3_VERSION},)
+    ifeq ($(USE_PY3VENV), 0)
+		$(PY) -m venv venv
+    else
+		$(PY_VENV) venv
+    endif
+	@echo \#\#\# venv build done.
+
+	@echo \#\#\# Preparing wheel environment and directory ...
+	$(shell which mkdir) -pv $(WHEEL) 2>/dev/null
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install wheel
+	@echo \#\#\# wheel env done.
+
+	@echo \#\#\# Installing package dependencies ...
+	venv/bin/pip wheel --wheel-dir $(WHEEL) --find-links=$(WHEEL) .
+	venv/bin/pip install --use-wheel --find-links=$(WHEEL) -e .
+	@echo \#\#\# Package install done.
+else
+	@echo \#\#\# Hmmm, cannot find python3 exe.
+	@echo \#\#\# Virtual environment not created.
+endif
+
+init_wheel: clear_env init_env_from_wheel
+
+init_build: init_env_from_wheel build
+
+build:
+	@echo \#\#\# Building package ...
+	venv/bin/python setup.py sdist bdist_wheel -d $(WHEEL)
+	@echo \#\#\# Build done.
+
+upload:
+	$(PY) setup.py sdist upload -r internal
+
+py_versions:
+	@echo python3 version: ${PY3_VERSION}
+	@echo python3 minor: ${PY3_VERSION_MINOR}
+	@echo USE_PY3VENV: ${USE_PY3VENV}
+	@echo python3 virtualenv command: ${PY_VENV}
+	@echo path to python executable: ${PY}
+
+.PHONY: tests docs py_versions init build upload

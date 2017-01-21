@@ -1,4 +1,7 @@
-import unittest2
+"""Unit tests for :class:`Filer`.
+
+"""
+import unittest
 import tempfile
 import os
 
@@ -15,8 +18,9 @@ from filer.files import (get_directory_files,
                          get_file_time_in_utc)
 
 
-class TestFiles(unittest2.TestCase):
+class TestFiles(unittest.TestCase):
     """:class:`filer.Files`
+
     """
     def test_get_directory_files_no_directory(self):
         """Get directory file -- no directory.
@@ -146,9 +150,9 @@ class TestFiles(unittest2.TestCase):
         """Copy a file.
         """
         source_fh = tempfile.NamedTemporaryFile()
-        fh = tempfile.NamedTemporaryFile()
-        target = fh.name
-        fh.close()
+        file_h = tempfile.NamedTemporaryFile()
+        target = file_h.name
+        file_h.close()
 
         # Check that the target does not exist.
         msg = 'Target file should not exist yet'

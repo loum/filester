@@ -1,14 +1,16 @@
-.. GeosUtils documentation master file
+.. Filer project documentation master file
 
-GeosUtils
-=========
+Filer
+=====
 
 Contents:
 
 .. toctree::
-    :maxdepth: 2
+   :maxdepth: 2
 
-    modules/log.rst
+   Python File-based Helpers <modules/filer.rst>
+
+
 
 Indices and tables
 ==================
@@ -16,4 +18,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
