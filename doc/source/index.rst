@@ -10,8 +10,6 @@ Contents:
 
    Python File-based Helpers <modules/filer.rst>
 
-
-
 Indices and tables
 ==================
 

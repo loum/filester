@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Logga documentation build configuration file, created by
+# Filer documentation build configuration file, created by
 # sphinx-quickstart on Mon Mar 21 11:46:50 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -49,7 +49,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Logga'
+project = 'Filer'
 copyright = '2016, Lou Markovski'
 author = 'Lou Markovski'
 
@@ -203,7 +203,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Loggadoc'
+htmlhelp_basename = 'Filerdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -225,7 +225,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Logga.tex', 'Logga Documentation',
+    (master_doc, 'Filer.tex', 'Filer Documentation',
      'Lou Markovski', 'manual'),
 ]
 
@@ -255,7 +255,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'logga', 'Logga Documentation',
+    (master_doc, 'filer', 'Filer Documentation',
      [author], 1)
 ]
 
@@ -269,8 +269,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Logga', 'Logga Documentation',
-     author, 'Logga', 'One line description of project.',
+    (master_doc, 'Filer', 'Filer Documentation',
+     author, 'Filer', 'One line description of project.',
      'Miscellaneous'),
 ]
 
