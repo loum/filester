@@ -83,7 +83,7 @@ ifneq (${PY3_VERSION},)
 
 	@echo \#\#\# Installing package dependencies ...
 	venv/bin/pip wheel --wheel-dir $(WHEEL) --find-links=$(WHEEL) .
-	venv/bin/pip install --use-wheel --find-links=$(WHEEL) -e .
+	venv/bin/pip install --find-links=$(WHEEL) -e .
 	@echo \#\#\# Package install done.
 else
 	@echo \#\#\# Hmmm, cannot find python3 exe.
