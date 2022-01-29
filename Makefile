@@ -5,12 +5,14 @@ include makester/makefiles/makester.mk
 include makester/makefiles/docker.mk
 include makester/makefiles/python-venv.mk
 
-export PATH := $(MAKESTER__PROJECT_DIR)/3env/bin:$(PATH)
+export PATH := 3env/bin:$(PATH)
+export PYTHONPATH := src
 
 VARS_TARGETS := help\
- version\
+ init\
  package\
- init
+ pypi-build\
+ version
 # Needs Docker and https://hub.docker.com/r/gittools/gitversion/
 ifeq ($(MAKECMDGOALS), $(filter $(MAKECMDGOALS), $(VARS_TARGETS)))
 export RELEASE_VERSION := $(shell $(DOCKER) run --rm\
@@ -29,30 +31,41 @@ endif
 init: clear-env pip-editable
 
 # Define the default test suit to run.
-TESTS := filer/tests
+TESTS := tests
 tests:
 	$(PYTHON) -m pytest\
  -o log_cli=true\
  --log-cli-level=INFO -svv\
  --exitfirst --cov-config .coveragerc\
- --pythonwarnings ignore --cov filer\
+ --pythonwarnings ignore --cov src\
  -o junit_family=xunit2\
  --junitxml junit.xml $(TESTS)
 
 docs:
 	@sphinx-build -b html doc/source doc/build
 
+package: WHEEL=.wheelhouse
+package: APP_ENV=prod
+
 version:
 	$(info ### AssemblySemFileVer: $(RELEASE_VERSION))
 
-#upload:
-#	$(PY) setup.py sdist upload -r internal
+deps:
+	pipdeptree
+
+lint:
+	-@pylint $(MAKESTER__PROJECT_DIR)/src
+
+pypi-build:
+	$(PYTHON) setup.py sdist bdist_wheel
 
 help: makester-help python-venv-help
 	@echo "(Makefile)\n\
   init                 Build the local Python-based virtual environment\n\
   deps                 Display PyPI package dependency tree\n\
+  lint                 Lint the code base\n\
   version              Get latest package release version\n\
-  tests                Run code test suite\n"
+  tests                Run code test suite\n\
+  pypi-build           Create a source archive and wheel for package \"$(MAKESTER__PROJECT_NAME)\"\n"
 
 .PHONY: help tests

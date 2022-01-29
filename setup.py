@@ -33,7 +33,6 @@ if os.path.basename(cwd) != PROJECT_NAME:
 
 
 PROD_PACKAGES = [
-    'logga>=1.0.0',
 ]
 
 DEV_PACKAGES = [
@@ -44,6 +43,7 @@ DEV_PACKAGES = [
     'pytest-cov',
     'pytest-sugar',
     'sphinx_rtd_theme',
+    'twine',
 ]
 
 PACKAGES = list(PROD_PACKAGES)
@@ -58,8 +58,9 @@ SETUP_KWARGS = {
     'author_email': 'lou.markovski@gmail.com',
     'url': 'https://github.com/loum/filer',
     'install_requires': PACKAGES,
-    'packages': setuptools.find_packages(),
-    'package_data': {'filer': []},
+    'package_dir': {'': 'src'},
+    'packages': setuptools.find_packages(where='src'),
+    'include_package_data': True,
     'license': 'MIT',
     'classifiers': [
         'Development Status :: 5 - Production/Stable',
