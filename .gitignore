@@ -37,8 +37,36 @@ coverage.xml
 .pydevproject
 
 # Local virtual environment
-.env
-venv
+[v23]env
 
 # py.test
 .cache
+.pytest_cache
+
+# Vagrant
+.vagrant
+*console.log
+
+# SonarQube
+.scannerwork
+
+# PyCharm
+.idea
+
+# Junit
+junit.xml
+
+# Docker test env file
+test.env
+
+# Spark
+derby.log
+metastore_db
+
+# Visual Studio Code
+.vscode
+
+# Zeppelin (Docker)
+docker/zeppelin/notebook/~Trash/
+docker/zeppelin/notebook/.git
+docker/zeppelin/data
