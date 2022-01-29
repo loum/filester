@@ -42,7 +42,7 @@ tests:
  --junitxml junit.xml $(TESTS)
 
 docs:
-	@sphinx-build -b html doc/source doc/build
+	@sphinx-build -b html docs/source docs/build
 
 package: WHEEL=.wheelhouse
 package: APP_ENV=prod
@@ -68,4 +68,4 @@ help: makester-help python-venv-help
   tests                Run code test suite\n\
   pypi-build           Create a source archive and wheel for package \"$(MAKESTER__PROJECT_NAME)\"\n"
 
-.PHONY: help tests
+.PHONY: help tests docs

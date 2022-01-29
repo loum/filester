@@ -43,7 +43,7 @@ def create_dir(directory: str) -> str:
     return status
 
 
-def get_directory_files(file_path: str, file_filter=None):
+def get_directory_files(file_path: str, file_filter: str = None):
     """Generator that returns the files in the directory given by *file_path*.
 
     Does not include the special entries '.' and '..' even if they are
