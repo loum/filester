@@ -60,6 +60,7 @@ deps:
 lint:
 	-@pylint $(MAKESTER__PROJECT_DIR)/src
 
+pypi-build: APP_ENV=prod
 pypi-build:
 	$(info ### Clearing dist/*)
 	rm -fr dist/*
