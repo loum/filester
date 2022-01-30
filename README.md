@@ -1,4 +1,4 @@
-# Filer: generic, file based utilities and helpers
+# Filester: generic, file based utilities and helpers
 - [Overview](#Overview)
 - [Prequisites](#Prerequisites)
   - [Upgrading GNU Make (macOS)](#Upgrading-GNU-Make-(macOS))
@@ -25,7 +25,7 @@ Find yourself running the same file based operations over and over again in your
 ### Building the Local Environment
 Get the code and change into the top level `git` project directory:
 ```
-git clone git@github.com:loum/filer.git && cd filer
+git clone git@github.com:loum/filester.git && cd filester
 ```
 > **_NOTE:_** Run all commands from the top-level directory of the `git` repository.
 
@@ -75,7 +75,7 @@ make docs-live
 
 With your web browser navigate to [http://localhost:8889](http://localhost:8889).
 
-Documentation is also served from the `main` branch via GitHub pages at [https://loum.github.io/filer/](https://loum.github.io/filer/)
+Documentation is also served from the `main` branch via GitHub pages at [https://loum.github.io/filester/](https://loum.github.io/filester/)
 
 ## Useful Commands
 ### `make init`
@@ -95,4 +95,4 @@ Display PyPI package dependency tree.
 Apple seems to have an issue with licensing around GNU products: more specifically to the terms of the GPLv3 license agreement. It is unlikely that Apple will provide current versions of utilities that are bound by the GPLv3 licensing constraints.
 
 ---
-[top](#Filer:-generic- file based-utilities-and-helpers)
+[top](#Filester:-generic- file based-utilities-and-helpers)

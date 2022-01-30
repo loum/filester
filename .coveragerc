@@ -1,5 +1,5 @@
 [run]
-omit = filer/tests/*,3env/*,setup.py
+omit = filester/tests/*,3env/*,setup.py
 
 [report]
 show_missing = True

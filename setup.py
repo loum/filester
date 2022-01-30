@@ -59,7 +59,7 @@ SETUP_KWARGS = {
     'long_description': os.path.join('docsource', 'README'),
     'author': 'Lou Markovski',
     'author_email': 'lou.markovski@gmail.com',
-    'url': 'https://github.com/loum/filer',
+    'url': 'https://github.com/loum/filester',
     'install_requires': PACKAGES,
     'package_dir': {'': 'src'},
     'packages': setuptools.find_packages(where='src'),

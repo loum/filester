@@ -68,7 +68,9 @@ pypi-build:
 
 pypi-validate:
 	$(info ### Validate package "$(MAKESTER__PROJECT_NAME)")
-	twine check dist/filer-$(RELEASE_VERSION)-py3-none-any.whl dist/filer-$(RELEASE_VERSION).tar.gz
+	twine check\
+ dist/$(MAKESTER__PROJECT_NAME)-$(RELEASE_VERSION)-py3-none-any.whl\
+ dist/$(MAKESTER__PROJECT_NAME)-$(RELEASE_VERSION).tar.gz
 
 help: makester-help python-venv-help
 	@echo "(Makefile)\n\

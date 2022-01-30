@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Filer'
+project = 'Filester'
 copyright = '2022, Lou Markovski'
 author = 'Lou Markovski'
 
