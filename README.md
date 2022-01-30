@@ -55,14 +55,13 @@ Project documentation is self contained under the ``doc/source`` directory.  To 
 ```
 make docs
 ```
-The project comes with a simple web server that allows you to present the docs from within your own environment::
+To view the docs from within your own environment::
 ```
- cd docs/build
- ./http_server.py
-```    
+make docs-live
+```
 > **_Note:_** The web server will block your CLI and all activity will be logged to the console.  To end serving pages, just `Ctrl-C``
-    
-To view pages, open up a web browser and navigate to `http:<your_server_IP>:8888`
+
+With your web browser navigate to [http://localhost:8889](http://localhost:8889).
 
 ## Useful Commands
 ### `make init`
