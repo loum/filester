@@ -51,12 +51,15 @@ PACKAGES = list(PROD_PACKAGES)
 if (os.environ.get('APP_ENV') and 'local' in os.environ.get('APP_ENV')):
     PACKAGES.extend(DEV_PACKAGES)
 
+with open (os.path.join('docsource', 'PYPI.md'), encoding='utf-8') as _fh:
+    readme = _fh.read()
+
 SETUP_KWARGS = {
     'name': PROJECT_NAME,
     'version': os.environ.get('RELEASE_VERSION', '1.0.0'),
     'description': 'Common file-based utilities',
     'long_description_content_type': 'text/markdown',
-    'long_description': os.path.join('docsource', 'README'),
+    'long_description': readme,
     'author': 'Lou Markovski',
     'author_email': 'lou.markovski@gmail.com',
     'url': 'https://github.com/loum/filester',
