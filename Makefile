@@ -12,6 +12,7 @@ VARS_TARGETS := help\
  init\
  package\
  pypi-build\
+ pypi-validate\
  version
 # Needs Docker and https://hub.docker.com/r/gittools/gitversion/
 ifeq ($(MAKECMDGOALS), $(filter $(MAKECMDGOALS), $(VARS_TARGETS)))
@@ -60,7 +61,14 @@ lint:
 	-@pylint $(MAKESTER__PROJECT_DIR)/src
 
 pypi-build:
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(info ### Clearing dist/*)
+	rm -fr dist/*
+	$(info ### Create a source archive and wheel for package "$(MAKESTER__PROJECT_NAME)")
+	$(PYTHON) -m build --wheel --sdist
+
+pypi-validate:
+	$(info ### Validate package "$(MAKESTER__PROJECT_NAME)")
+	twine check dist/filer-$(RELEASE_VERSION)-py3-none-any.whl dist/filer-$(RELEASE_VERSION).tar.gz
 
 help: makester-help python-venv-help
 	@echo "(Makefile)\n\
@@ -71,6 +79,7 @@ help: makester-help python-venv-help
   tests                Run code test suite\n\
   docs                 Generate code based docs with Sphinx\n\
   docs-live            View docs via web browser\n\
-  pypi-build           Create a source archive and wheel for package \"$(MAKESTER__PROJECT_NAME)\"\n"
+  pypi-build           Create a source archive and wheel for package \"$(MAKESTER__PROJECT_NAME)\"\n\
+  pypi-validate        Validate package \"$(MAKESTER__PROJECT_NAME)\"\n"
 
 .PHONY: help tests docs

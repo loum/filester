@@ -7,6 +7,8 @@
   - [Building the Local Environment](#Building-the-Local-Environment)
     - [Local Environment Maintenance](#Local-Environment-Maintenance)
   - [Running the Test Harness](#Running-the-Test-Harness)
+- [PyPI Packaging](#PyPI-Packaging)
+- [Build the Documentation](#Build-the-Documentation)
 - [Useful Commands](#Useful-Commands)
 - [FAQs](#FAQs)
 
@@ -23,7 +25,7 @@ Find yourself running the same file based operations over and over again in your
 ### Building the Local Environment
 Get the code and change into the top level `git` project directory:
 ```
-git clone git@github.com:loum/filer.git && cd seekanalytics-etl
+git clone git@github.com:loum/filer.git && cd filer
 ```
 > **_NOTE:_** Run all commands from the top-level directory of the `git` repository.
 
@@ -50,8 +52,18 @@ Tests are good.  We use [pytest](https://docs.pytest.org/en/6.2.x/).  To run the
 ```
 make tests
 ```
+## PyPI Packaging
+To build a new PyPI ready package:
+```
+make pypi-build
+```
+To validate the package:
+```
+make pypi-validate
+```
+
 ## Build the Documentation
-Project documentation is self contained under the ``doc/source`` directory.  To build the documentation locally::
+Project documentation is self contained under the ``doc/source`` directory that is managed with [Sphinx](https://www.sphinx-doc.org/en/master/).  To build the documentation locally::
 ```
 make docs
 ```
@@ -62,6 +74,8 @@ make docs-live
 > **_Note:_** The web server will block your CLI and all activity will be logged to the console.  To end serving pages, just `Ctrl-C``
 
 With your web browser navigate to [http://localhost:8889](http://localhost:8889).
+
+Documentation is also served from the `main` branch via GitHub pages at [https://loum.github.io/filer/](https://loum.github.io/filer/)
 
 ## Useful Commands
 ### `make init`

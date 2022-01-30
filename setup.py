@@ -37,6 +37,7 @@ PROD_PACKAGES = [
 
 DEV_PACKAGES = [
     'Sphinx',
+    'build',
     'pipdeptree',
     'pylint',
     'pytest',
@@ -54,6 +55,8 @@ SETUP_KWARGS = {
     'name': PROJECT_NAME,
     'version': os.environ.get('RELEASE_VERSION', '1.0.0'),
     'description': 'Common file-based utilities',
+    'long_description_content_type': 'text/markdown',
+    'long_description': os.path.join('docsource', 'README'),
     'author': 'Lou Markovski',
     'author_email': 'lou.markovski@gmail.com',
     'url': 'https://github.com/loum/filer',
