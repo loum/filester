@@ -4,8 +4,6 @@ import os
 import setuptools
 
 
-PROJECT_NAME = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
-
 class Packaging(setuptools.Command):
     """Common PyPI packaging tools.
 
@@ -24,13 +22,6 @@ class Packaging(setuptools.Command):
 
         """
         os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
-
-
-cwd = os.getcwd()
-project_path_name = os.path.abspath(os.path.realpath(__file__))
-if os.path.basename(cwd) != PROJECT_NAME:
-    os.chdir(project_path_name.parent)
-
 
 PROD_PACKAGES = [
 ]
@@ -55,7 +46,7 @@ with open (os.path.join('docsource', 'PYPI.md'), encoding='utf-8') as _fh:
     readme = _fh.read()
 
 SETUP_KWARGS = {
-    'name': PROJECT_NAME,
+    'name': 'filester',
     'version': os.environ.get('RELEASE_VERSION', '1.0.0'),
     'description': 'Common file-based utilities',
     'long_description_content_type': 'text/markdown',
