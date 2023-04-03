@@ -1,28 +1,36 @@
 # Filester: generic, file based utilities and helpers
-- [Overview](#Overview)
-- [Prequisites](#Prerequisites)
-  - [Upgrading GNU Make (macOS)](#Upgrading-GNU-Make-(macOS))
-- [Getting Started](#Getting-Started)
-  - [Help](#Help)
-  - [Building the Local Environment](#Building-the-Local-Environment)
-    - [Local Environment Maintenance](#Local-Environment-Maintenance)
-  - [Running the Test Harness](#Running-the-Test-Harness)
-- [PyPI Packaging](#PyPI-Packaging)
-- [Build the Documentation](#Build-the-Documentation)
-- [Useful Commands](#Useful-Commands)
-- [FAQs](#FAQs)
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [(macOS Users only) upgrading GNU `make`](#macos-users-only-upgrading-gnu-make)
+  - [Creating the local environment](#creating-the-local-environment)
+  - [Local environment maintenance](#local-environment-maintenance)
+- [Help](#help)
+- [Running the Test Harness](#running-the-test-harness)
 
 ## Overview
-Find yourself running the same file based operations over and over again in your projects?  Yeah, annoying.  As a result, this package is a grouping of common file operation facilities which delegate the package inclusion to `pip` and PyPI.  One less thing to worry about ...
+Find yourself running the same file based operations over and over again in your projects?  Yeah, annoying. As a result, this package is a grouping of common file operation facilities which delegate the package inclusion to `pip` and PyPI. One less thing to worry about ...
+
+See [Filester's documentation](https://loum.github.io/filester/) for more information.
+
+[top](#filester-generic-file-based-utilities-and-helpers)
 
 ## Prerequisites
 - [GNU make](https://www.gnu.org/software/make/manual/make.html)
-- Python 3 Interpreter [(we recommend installing pyenv)](https://github.com/pyenv/pyenv)
+- Python 3 Interpreter. [We recommend installing pyenv](https://github.com/pyenv/pyenv)
 - [Docker](https://www.docker.com/)
 
-## Getting Started
+[top](#filester-generic-file-based-utilities-and-helpers)
 
-### Building the Local Environment
+## Getting Started
+[Makester](https://loum.github.io/makester/) is used as the Integrated Developer Platform.
+
+### (macOS Users only) upgrading GNU `make`
+Follow [these notes](https://loum.github.io/makester/macos/#upgrading-gnu-make-macos) to get [GNU make](https://www.gnu.org/s
+oftware/make/manual/make.html).
+
+### Creating the local environment
 Get the code and change into the top level `git` project directory:
 ```
 git clone git@github.com:loum/filester.git && cd filester
@@ -33,66 +41,33 @@ For first-time setup, prime the [Makester project](https://github.com/loum/makes
 ```
 git submodule update --init
 ```
+
 Initialise the environment:
 ```
-make init
+make init-dev
 ```
-#### Local Environment Maintenance
+
+### Local environment maintenance
 Keep [Makester project](https://github.com/loum/makester.git) up-to-date with:
 ```
 git submodule update --remote --merge
 ```
-### Help
-There should be a `make` target to get most things done.  Check the help for more information:
+
+[top](#filester-generic-file-based-utilities-and-helpers)
+
+## Help
+There should be a `make` target to get most things done. Check the help for more information:
 ```
 make help
 ```
-### Running the Test Harness
-Tests are good.  We use [pytest](https://docs.pytest.org/en/6.2.x/).  To run the tests:
+
+[top](#filester-generic-file-based-utilities-and-helpers)
+
+## Running the Test Harness
+We use [pytest](https://docs.pytest.org/en/latest/). To run the tests:
 ```
 make tests
 ```
-## PyPI Packaging
-To build a new PyPI ready package:
-```
-make pypi-build
-```
-To validate the package:
-```
-make pypi-validate
-```
-
-## Build the Documentation
-Project documentation is self contained under the ``doc/source`` directory that is managed with [Sphinx](https://www.sphinx-doc.org/en/master/).  To build the documentation locally::
-```
-make docs
-```
-To view the docs from within your own environment::
-```
-make docs-live
-```
-> **_Note:_** The web server will block your CLI and all activity will be logged to the console.  To end serving pages, just `Ctrl-C``
-
-With your web browser navigate to [http://localhost:8889](http://localhost:8889).
-
-Documentation is also served from the `main` branch via GitHub pages at [https://loum.github.io/filester/](https://loum.github.io/filester/)
-
-## Useful Commands
-### `make init`
-Rebuilds your local Python virtual environment and get the latest package dependencies.
-
-### `make py`
-Start the `python` interpreter in virtual environment context.  This will give you access to all of your PyPI package dependencies.
-
-### `make lint`
-Lint the code base with `pylint`.
-
-### `make deps`
-Display PyPI package dependency tree.
-
-## FAQs
-***Q. Why is the default make on macOS so old?***
-Apple seems to have an issue with licensing around GNU products: more specifically to the terms of the GPLv3 license agreement. It is unlikely that Apple will provide current versions of utilities that are bound by the GPLv3 licensing constraints.
 
 ---
-[top](#Filester:-generic- file based-utilities-and-helpers)
+[top](#filester-generic-file-based-utilities-and-helpers)
