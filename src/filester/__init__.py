@@ -1,11 +1,9 @@
 """Generic, file-based utilities and helpers.
 
 """
-from typing import AnyStr, Iterator, Optional, Union
-import fcntl
+from typing import Iterator, Optional, Union
 import fnmatch
 import hashlib
-import io
 import os
 import re
 import shutil
