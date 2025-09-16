@@ -1,7 +1,5 @@
-"""Generic, file-based utilities and helpers.
+"""Generic, file-based utilities and helpers."""
 
-"""
-from typing import Iterator, Optional, Union
 import fnmatch
 import hashlib
 import os
@@ -10,12 +8,13 @@ import shutil
 import string
 import tempfile
 import time
+from typing import Iterator, Optional, Union
 
-from logga import log
+from filester.logging_config import log
 
 
 def create_dir(directory: str) -> bool:
-    """Helper method to manage the creation of a directory.
+    """Create directory given by `directory`.
 
     Parameters:
         directory: Name of the directory structure to create.
@@ -43,7 +42,7 @@ def create_dir(directory: str) -> bool:
 def get_directory_files(
     file_path: str, file_filter: Optional[str] = None
 ) -> Iterator[str]:
-    """Generator that returns the files in the directory given by `file_path`.
+    """Get files in the directory given by `file_path`.
 
     Does not include the special entries `.` and `..` even if they are
     present in the directory.
@@ -67,29 +66,33 @@ def get_directory_files(
         log.error("Directory listing error for %s: %s", file_path, err)
 
     for this_file in directory_files:
-        this_file = os.path.join(file_path, this_file)
-        if not os.path.isfile(this_file):
+        _file = os.path.join(file_path, this_file)
+        if not os.path.isfile(_file):
             continue
 
-        if file_filter is None:
-            yield this_file
-        else:
-            if fnmatch.fnmatch(os.path.basename(this_file), file_filter):
-                yield this_file
+        if file_filter is None or fnmatch.fnmatch(os.path.basename(_file), file_filter):
+            yield _file
 
 
 def get_directory_files_list(
     file_path: str, file_filter: Optional[str] = None
 ) -> list[Optional[str]]:
-    """Wrapper around the `get_directory_files` function that
-    returns a list of files in the directory denoted by `file_path`.
+    """Get a list of files in the directory denoted by `file_path`.
+
+    Parameters:
+        file_path: Absolute path name to the directory.
+        file_filter: Regular expression type pattern that can be input directly
+            into the `re.search` function
+
+    Returns:
+        List of files in the directory.
 
     """
     return list(get_directory_files(file_path, file_filter))
 
 
 def move_file(source: str, target: str, dry: bool = False) -> bool:
-    """Attempts to move `source` to `target`.
+    """Move `source` to `target`.
 
     Checks if the `target` directory exists.  If not, will attempt to
     create before attempting the file move.
@@ -126,7 +129,7 @@ def move_file(source: str, target: str, dry: bool = False) -> bool:
 
 
 def copy_file(source: str, target: str) -> bool:
-    """Attempts to copy `source` to `target`.
+    """Copy `source` to `target`.
 
     Guarantees an atomic copy.  In other word, `target` will not present
     on the filesystem until the copy is complete.
@@ -155,7 +158,7 @@ def copy_file(source: str, target: str) -> bool:
                     shutil.copyfile(source, tmp_target)
                     os.rename(tmp_target, target)
                     status = True
-            except (OSError, IOError) as err:
+            except OSError as err:
                 log.error('%s copy to %s failed: "%s"', source, target, err)
     else:
         log.warning('Source file "%s" does not exist', str(source))
@@ -164,7 +167,7 @@ def copy_file(source: str, target: str) -> bool:
 
 
 def remove_files(files: Union[str, list[str]]) -> list[str]:
-    """Attempts to remove `files`.
+    """Remove `files`.
 
     Parameters:
         files: Either a list of files to remove or a single filename.
@@ -213,9 +216,9 @@ def check_filename(filename: str, re_format: str) -> bool:
 
 
 def gen_digest(value: Optional[Union[str, int]], digest_len: int = 8) -> Optional[str]:
-    """Generates a 64-bit checksum against `value`.
+    """Create a checksum against `value` using a secure hash function.
 
-    The digest is the first 8-bytes of the `hashlib.hexdigest` function.
+    The digest is the first `digest_len` hexadecimal digits of the `hashlib.hexdigest` function.
 
     Parameters:
         value: The string value to generate digest against.
@@ -227,7 +230,7 @@ def gen_digest(value: Optional[Union[str, int]], digest_len: int = 8) -> Optiona
     digest = None
 
     if value is not None and isinstance(value, str):
-        md5 = hashlib.md5()
+        md5 = hashlib.md5(usedforsecurity=False)
         md5.update(bytes(value, encoding="utf-8"))
         digest = md5.hexdigest()[0:digest_len]
     else:
@@ -237,12 +240,14 @@ def gen_digest(value: Optional[Union[str, int]], digest_len: int = 8) -> Optiona
 
 
 def gen_digest_path(value: str, dir_depth: int = 4) -> list[str]:
-    """Helper function that handles the creation of digest-based
-    directory path.  The digest is calculated from `value`.
-    For example, the `value` `193433` will generate the directory path list:
-    ```
-    ['73', '73b0', '73b0b6', '73b0b66e']
-    ```
+    """Manage the creation of digest-based directory path.
+
+    The digest is calculated from `value`. For example, the `value` `193433` will generate the
+    directory path list:
+
+        ```
+        ['73', '73b0', '73b0b6', '73b0b66e']
+        ```
 
     Depth of directories created can be controlled by `dir_depth`.
 
@@ -250,9 +255,10 @@ def gen_digest_path(value: str, dir_depth: int = 4) -> list[str]:
         value: The string value to generate digest against.
         dir_depth: number of directory levels (default 4).  For example,
             depth of 2 would produce:
-            ```
-            ['73', 73b0']
-            ```
+
+                ```
+                ['73', 73b0']
+                ```
 
     Returns:
         list of 8-byte segments that constitite the original 32-byte digest.
@@ -268,8 +274,7 @@ def gen_digest_path(value: str, dir_depth: int = 4) -> list[str]:
 
 
 def templater(template_file: str, **kwargs: dict) -> Optional[str]:
-    """Attemptes to parse `template` file and substitute template parameters
-    with `kwargs` construct.
+    """Parse `template` file and substitute template parameters with `kwargs` construct.
 
     Parameters:
         template_file: Fully qualified path to the template file.
@@ -300,7 +305,7 @@ def templater(template_file: str, **kwargs: dict) -> Optional[str]:
     try:
         with open(template_file, encoding="utf-8") as _fh:
             template_src = _fh.read()
-    except IOError as err:
+    except OSError as err:
         log.error('Unable to source template file "%s": %s', template_file, err)
 
     template_sub = None
@@ -325,10 +330,17 @@ def templater(template_file: str, **kwargs: dict) -> Optional[str]:
 
 
 def get_file_time_in_utc(filename: str) -> Optional[str]:
-    """Will attempt to read `filename` modified time stamp and return
-    a RFC 3339-compliant string in UTC.
+    """Get the last modified time of `filename` as a RFC 3339-compliant string in UTC.
 
-    If time can not be obtained then `None` is returned
+    If the file does not exist or its time stamp cannot be read for any reason, this function
+    returns `None`.
+
+    Parameters:
+        filename: The name of the file to retrieve the timestamp for.
+
+    Returns:
+        The last modified time fo the file in RFC 3339 format, or `None` if the timestamp cannot be
+            obtained.
 
     """
     utc_time_str = None

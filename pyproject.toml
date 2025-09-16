@@ -1,3 +1,159 @@
 [build-system]
-requires = ["setuptools>=40.8.0", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = [
+    "setuptools",
+    "wheel",
+    "setuptools-git-versioning>=2.0,<3",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "filester"
+authors = [
+    {name="Lou Markovski", email="lou.markovski@gmail.com"},
+]
+description = "Filester: generic, file based utilities and helpers"
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "structlog",
+]
+dynamic = ["version"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "src/filester/VERSION"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "build",
+    "deptry",
+    "mdformat",
+    "mdformat-mkdocs",
+    "mkdocs-material",
+    "mkdocstrings-python",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+    "ruff",
+    "sqlalchemy2-stubs",
+    "twine",
+    "types-pytz",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.urls]
+Documentation = "https://loum.github.io/filester/"
+Repository = "https://github.com/loum/filester"
+Issues = "https://github.com/loum/filester/issues"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::UserWarning",
+]
+addopts = "--cov src --exitfirst -vv"
+tmp_path_retention_policy = "all"
+tmp_path_retention_count = "1"
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
+fail_under = 50
+
+[tool.coverage.run]
+branch = true
+omit = [
+    ".venv/*",
+    "src/filester/logging_config.py",
+    "tests/*"
+ ]
+
+[tool.deptry]
+exclude = [".pyenv",".venv"]
+ignore = ["DEP004"]
+
+[tool.deptry.per_rule_ignores]
+DEP001 = ["logging_config"]
+
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+    # pylint
+    "PLC", "PLE", "PLR", "PLW",
+    # pep8-naming
+    "N",
+    # pydocstyle
+    "D",
+    # pylint
+    "PLC", "PLE", "PLR", "PLW",
+    # pep8-naming
+    "N",
+    # pydocstyle
+    "D",
+]
+ignore = [
+    # DoNotAssignLambda
+    "E731",
+]
+
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"

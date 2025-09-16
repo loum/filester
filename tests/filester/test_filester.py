@@ -1,9 +1,9 @@
-"""Unit tests for `filester`.
+"""Unit tests for `filester`."""
 
-"""
-from typing import Optional
+import contextlib
 import os
 import tempfile
+from typing import Optional
 
 import filester
 
@@ -209,10 +209,8 @@ def test_move_file_to_directory(working_dir: str) -> None:
         assert received, "Move file from current directory failed"
 
     # Clean up.
-    try:
+    with contextlib.suppress(PermissionError):
         os.removedirs(os.path.dirname(filename))
-    except PermissionError:
-        pass
 
 
 def test_get_file_time_in_utc() -> None:

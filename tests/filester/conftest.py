@@ -1,12 +1,12 @@
-"""Global fixture arrangement.
+"""Global fixture arrangement."""
 
-"""
 import shutil
 import tempfile
 
-from logga import log
 import _pytest.fixtures
 import pytest
+
+from filester.logging_config import log
 
 
 @pytest.fixture

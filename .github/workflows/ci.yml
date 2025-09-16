@@ -17,7 +17,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Project Filester vars
-        run: make vars
+        run: |
+          sh -c "$(curl -fsSL https://raw.githubusercontent.com/loum/makester/main/tools/install.sh)"
+          make vars
       - name: Project Filester test suite
         run: |
           make init-dev
