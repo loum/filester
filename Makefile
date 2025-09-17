@@ -30,9 +30,8 @@ init: _venv-init
 # Dagsesh test harness.
 #
 TESTS_TO_RUN := $(if $(TESTS),$(TESTS),tests)
-PRIME_TEST_CONTEXT ?= true
 ifneq (tests,$(TESTS_TO_RUN))
-COVERAGE := -no-cov
+COVERAGE := --no-cov
 endif
 
 tests:

@@ -3,21 +3,26 @@
 import contextlib
 import os
 import tempfile
+from pathlib import Path
 from typing import Optional
 
 import filester
 
 
+def test_create_directory_with_none() -> None:
+    """Create directory with invalid name."""
+    assert not filester.create_dir(None), "None as directory create name should fail"
+
+
 def test_get_directory_files_no_directory() -> None:
-    """Get directory file -- no directory."""
+    """Get directory file: no directory."""
     directory = tempfile.mkdtemp()
     os.removedirs(directory)
 
     directory_files: list[Optional[str]] = []
     for filename in filester.get_directory_files(directory):
         directory_files.append(filename)
-    msg = "Missing directory listing error"
-    assert not directory_files, msg
+    assert not directory_files, "Missing directory listing error"
 
     directory_files_list: list[Optional[str]] = filester.get_directory_files_list(
         directory
@@ -25,42 +30,41 @@ def test_get_directory_files_no_directory() -> None:
     assert not directory_files_list, "Missing directory listing error (list variant)"
 
 
-def test_get_directory_files_no_files(working_dir: str) -> None:
+def test_get_directory_files_no_files(tmp_path: Path) -> None:
     """Get directory file: no files."""
     directory_files: list[Optional[str]] = []
-    for filename in filester.get_directory_files(working_dir):
+    for filename in filester.get_directory_files(str(tmp_path)):
         directory_files.append(filename)
-    msg = "Empty directory listing error"
-    assert not directory_files, msg
+    assert not directory_files, "Empty directory listing error"
 
     directory_files_list: list[Optional[str]] = filester.get_directory_files_list(
-        working_dir
+        str(tmp_path)
     )
     assert not directory_files_list, "Empty directory listing error (list variant)"
 
 
-def test_get_directory_files(working_dir: str) -> None:
+def test_get_directory_files(tmp_path: Path) -> None:
     """Get directory files."""
     filename = None
-    with tempfile.NamedTemporaryFile(dir=working_dir, delete=False) as file_obj:
+    with tempfile.NamedTemporaryFile(dir=str(tmp_path), delete=False) as file_obj:
         filename = file_obj.name
 
     directory_files_list: list[Optional[str]] = filester.get_directory_files_list(
-        working_dir
+        str(tmp_path)
     )
     expected = [filename]
     assert directory_files_list == expected, "Directory listing error"
 
 
-def test_get_directory_files_filtered(working_dir: str) -> None:
+def test_get_directory_files_filtered(tmp_path: Path) -> None:
     """Get directory files: filtered."""
     filename = None
-    with tempfile.NamedTemporaryFile(dir=working_dir) as file_obj:
+    with tempfile.NamedTemporaryFile(dir=str(tmp_path)) as file_obj:
         filename = file_obj.name
 
     filter_file = "TCD_Deliveries_20140207111019.DAT"
     with open(
-        os.path.join(working_dir, filter_file), mode="w", encoding="utf-8"
+        os.path.join(str(tmp_path), filter_file), mode="w", encoding="utf-8"
     ) as _fh:
         _fh.close()
 
@@ -68,7 +72,7 @@ def test_get_directory_files_filtered(working_dir: str) -> None:
     directory_files_list: list[Optional[str]] = filester.get_directory_files_list(
         os.path.dirname(filename), file_filter=file_filter
     )
-    expected: list[Optional[str]] = [os.path.join(working_dir, filter_file)]
+    expected: list[Optional[str]] = [str(tmp_path / filter_file)]
     assert directory_files_list == expected, "Directory listing error"
 
 
@@ -179,30 +183,30 @@ def test_create_digest_dir_shorten_path() -> None:
     assert received == expected, "Digest directory path list error"
 
 
-def test_copy_file(working_dir: str) -> None:
+def test_copy_file(tmp_path: Path) -> None:
     """Copy a file."""
     with tempfile.NamedTemporaryFile() as source_fh:
         # Check that the target does not exist.
-        target = os.path.join(working_dir, os.path.basename(source_fh.name))
+        target = tmp_path / os.path.basename(source_fh.name)
         assert not os.path.exists(target), "Target file should not exist yet"
-        filester.copy_file(source_fh.name, target)
+        filester.copy_file(source_fh.name, str(target))
 
     # Check that the target does exist.
     assert os.path.exists(target), "Target file should exist"
 
 
-def test_move_file_to_directory(working_dir: str) -> None:
+def test_move_file_to_directory(tmp_path: Path) -> None:
     """Move a file into the current directory."""
     # Given an existing file
     with tempfile.NamedTemporaryFile(delete=False) as file_obj:
         filename = file_obj.name
 
         # and a target directory
-        # working_dir
+        # tmp_path
 
         # when I attempt to move the file to the target directory
         received = filester.move_file(
-            filename, os.path.join(working_dir, os.path.basename(filename))
+            filename, str(tmp_path / os.path.basename(filename))
         )
 
         # then the response should be the fully qualified path to the new file
