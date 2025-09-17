@@ -43,7 +43,7 @@ branches:
       of-merged-branch: true
       when-current-commit-tagged: false
     track-merge-target: false
-    regex: ^releases$
+    regex: ^release$
     source-branches: ['main']
     is-source-branch-for: []
     tracks-release-branches: false
