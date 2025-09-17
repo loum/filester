@@ -69,7 +69,7 @@ testpaths = ["tests"]
 filterwarnings = [
     "ignore::UserWarning",
 ]
-addopts = "--cov src --exitfirst -vv"
+addopts = "--cov src --exitfirst -svv"
 tmp_path_retention_policy = "all"
 tmp_path_retention_count = "1"
 
